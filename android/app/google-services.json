@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "625258758931",
+    "project_id": "doktorrandevu-71f95",
+    "storage_bucket": "doktorrandevu-71f95.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625258758931:android:82cf5ac88eccdbb4c790e6",
+        "android_client_info": {
+          "package_name": "com.example.doktor_randevu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuyFJPrPq1_T_eQJCbrcIL5Zazh3H16eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
