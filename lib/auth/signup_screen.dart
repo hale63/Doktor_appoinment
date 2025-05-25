@@ -676,6 +676,34 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
         if (user != null) {
           String userTypePath = userType == 'Doctor' ? 'Doctors' : 'Patients';
+
+          // 2. ÖNE Resmi yükle ve URL'yi al
+          String finalImageUrl = '';
+          if (_imageFile != null) {
+            try {
+              Reference storageReference = FirebaseStorage.instance
+                  .ref()
+                  .child('$userTypePath/${user.uid}/profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+              UploadTask uploadTask = storageReference.putFile(File(_imageFile!.path));
+              TaskSnapshot taskSnapshot = await uploadTask;
+              finalImageUrl = await taskSnapshot.ref.getDownloadURL();
+
+              print('✅ Resim başarıyla yüklendi: $finalImageUrl');
+
+              // State'i güncelle
+              setState(() {
+                profileImageUrl = finalImageUrl;
+              });
+
+            } catch (e) {
+              print('❌ Resim yükleme hatası: $e');
+              // Resim yüklenemese bile kayıt işlemi devam etsin
+              finalImageUrl = '';
+            }
+          }
+
+
           Map<String, dynamic> userData = {
             'uid': user.uid,
             'email': email,
@@ -683,7 +711,8 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
             'firstName': firstName,
             'lastName': lastName,
             'city': city,
-            'profileImageUrl': profileImageUrl,
+            //'profileImageUrl': profileImageUrl,
+            'profileImageUrl': finalImageUrl, // ← Artık doğru URL burada
             'latitude': latitude,
             'longitude': longitude,
           };
