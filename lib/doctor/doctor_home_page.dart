@@ -1,3 +1,4 @@
+import 'package:doktor_randevu/doctor/doctor_chatlist_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'doctor_profile.dart';
@@ -16,10 +17,9 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
 
   final List<Widget> _children = [
     DoctorRequestsPage(),
-    //DoctorChatlistPage(),
+    DoctorChatlistPage(), // bunu geri ekle
     DoctorProfile(),
   ];
-
   void _onItmTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -58,7 +58,7 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
       child: Scaffold(
         body: _children.elementAt(_selectedIndex),
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Color(0xff0064FA),
+          backgroundColor: Color(0xff951bd1),
           unselectedItemColor: Color(0xffBEBEBE),
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(

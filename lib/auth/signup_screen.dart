@@ -94,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           children: [
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(primaryPurple),
-              strokeWidth: 3,
+              strokeWidth: 2,
             ),
             SizedBox(height: 20),
             Text(
@@ -184,7 +184,24 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       ),
     );
   }
-
+  Widget _buildAreadyHaveAccountButton() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          // Şifre sıfırlama işlemi
+        },
+        child: Text(
+          'I have account?',
+          style: TextStyle(
+            color: primaryPurple,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
   Widget _buildFormContainer() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -483,7 +500,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
-              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi'].map((String cat) {
+              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi' ].map((String cat) {
                 return DropdownMenuItem(
                   value: cat,
                   child: Text(cat),

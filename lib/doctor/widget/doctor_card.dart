@@ -28,7 +28,7 @@ class DoctorCard extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(60),
-              border: Border.all(color: Color(0xff0064FA)),
+              border: Border.all(color: Color(0xff951bd1)),
             ),
             child: CircleAvatar(
               backgroundImage: NetworkImage(doctor.profileImageUrl),
