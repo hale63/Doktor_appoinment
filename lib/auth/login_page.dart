@@ -4,8 +4,12 @@ import 'package:doktor_randevu/patient/patient_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:shared_preferences/shared_preferences.dart';
 
+=======
+import 'package:doktor_randevu/auth/forgot_password_page.dart';
+>>>>>>> 70fdeb3f8ba1f4ac29fa2628ba1c254885b59a1e
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -349,7 +353,9 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       alignment: Alignment.centerRight,
       child: TextButton(
         onPressed: () {
-          // Şifre sıfırlama işlemi
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+          );
         },
         child: Text(
           'Şifremi Unuttum?',
