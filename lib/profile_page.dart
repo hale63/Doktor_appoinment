@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'pages/notifications_page.dart';
 import 'auth/login_page.dart';
 import 'pages/privacy_security_page.dart';
+import 'pages/help_page.dart';
+
 
 
 class ProfilePage extends StatefulWidget {
@@ -32,6 +34,12 @@ class _ProfilePageState extends State<ProfilePage> {
   void _navigateToUpcomingAppointments() {
     // Yaklaşan randevular sayfasına yönlendirme
     print("Yaklaşan Randevularım sayfasına git");
+  }
+  void _navigateToHelp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HelpPage()),
+    );
   }
 
   void _navigateToPasswordChange() {
@@ -197,6 +205,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
 
                     const SizedBox(height: 16),
+
+// Yardım
+                    _buildMenuItem(
+                      icon: Icons.help_outline,
+                      iconColor: Color(0xFF2196F3),
+                      title: 'Yardım',
+                      onTap: _navigateToHelp,
+                    ),
+                    const SizedBox(height: 16),
+
 
                     // Çıkış
                     _buildMenuItem(

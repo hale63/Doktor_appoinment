@@ -14,6 +14,7 @@ class Doctor {
   final int numberOfReviews;
   final int totalReviews;
 
+
   Doctor({
     required this.uid,
     required this.category,
