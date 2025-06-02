@@ -82,7 +82,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         // Example location; replace with actual data if available
                         style: GoogleFonts.poppins(
                           fontSize: 14,
-                          color: Color(0xffFA9600),
+                          color: Color(0xff8813c5),
                         ),
                       ),
                       SizedBox(
@@ -92,10 +92,10 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         children: [
                           IconButton(
                             icon: Image.asset(
-                              'assets/images/phone_call.png',
+                              'assets/call.png',
                               width: 30,
                               height: 30,
-                              color: Colors.blue,
+                              color: Colors.purple,
                             ),
                             onPressed: () {
                               // Add phone call functionality
@@ -104,10 +104,10 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                           ),
                           IconButton(
                             icon: Image.asset(
-                              'assets/images/chat_icon.png',
+                              'assets/message.png',
                               width: 30,
                               height: 30,
-                              color: Colors.blue,
+                              color: Colors.purple,
                             ),
                             onPressed: () {
                               // Add chat functionality
@@ -139,7 +139,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffFFB342),
+                    backgroundColor: Color(0xff2f0743),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -172,7 +172,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                   borderRadius: BorderRadius.circular(6),
                   color: Color(0xffF0EFFF),
                   border: Border.all(
-                    color: Color(0xffC8C4FF),
+                    color: Color(0xff2f0743),
                     width: 1,
                   ),
                 ),
@@ -184,7 +184,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff0064FA),
+                              backgroundColor: Color(0xff8813c5),
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -206,7 +206,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff0064FA),
+                              backgroundColor: Color(0xff8813c5),
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -249,7 +249,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff0064FA),
+                    backgroundColor: Color(0xff2f0743),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(

@@ -66,13 +66,15 @@ class _DoctorListPageState extends State<DoctorListPage> {
               SizedBox(height: 30.0),
 
               // Başlık ve resim
+              // Başlık ve resim
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset(
-                    'assets/images/doctor_icon.png',
-                    width: 50,
-                    height: 50,
+                    'assets/banner.png',
+                    width: MediaQuery.of(context).size.width, // Ekran genişliği kadar
+                    height: 150, // Daha büyük bir yükseklik
+                    fit: BoxFit.cover, // Oranları koruyarak sığdır
                     errorBuilder: (context, error, stackTrace) =>
                         Icon(Icons.medical_services, size: 50),
                   ),
@@ -89,7 +91,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
 
               SizedBox(height: 30),
               Text(
-                'Find Doctor by Category',
+                'our Categories ',
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -132,11 +134,11 @@ class _DoctorListPageState extends State<DoctorListPage> {
                     ),
                   ),
                   Text(
-                    'VIEW ALL',
+                    '',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xff006AFA),
+                      color: Color(0xff9f7aea),
                     ),
                   ),
                 ],
@@ -194,7 +196,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
               errorBuilder: (context, error, stackTrace) =>
                   Icon(Icons.medical_services,
                       size: 30,
-                      color: isHighlighed ? Colors.white : Color(0xff006AFA)),
+                      color: isHighlighed ? Colors.white : Color(0xff951bd1)),
             ),
           ),
         ),
@@ -203,7 +205,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
           title,
           style: GoogleFonts.poppins(
             fontSize: 12,
-            color: isHighlighed ? Color(0xff006AFA) : Colors.grey.shade600,
+            color: isHighlighed ? Color(0xff8813c5) : Colors.grey.shade600,
           ),
           textAlign: TextAlign.center,
         ),
