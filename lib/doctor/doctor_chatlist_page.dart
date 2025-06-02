@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:doktor_randevu/chat_screen.dart';
-import 'package:doktor_randevu/doctor/model/patient.dart';
+import '../chat_screen.dart';
+import 'model/patient.dart';
 
 class DoctorChatlistPage extends StatefulWidget {
   const DoctorChatlistPage({super.key});

@@ -139,7 +139,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff2f0743),
+                    backgroundColor: Color(0xff8813c5),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(
@@ -172,7 +172,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                   borderRadius: BorderRadius.circular(6),
                   color: Color(0xffF0EFFF),
                   border: Border.all(
-                    color: Color(0xff2f0743),
+                    color: Color(0xff8813c5),
                     width: 1,
                   ),
                 ),
@@ -184,7 +184,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff8813c5),
+                              backgroundColor: Color(0xff9f7aea),
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -206,7 +206,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff8813c5),
+                              backgroundColor: Color(0xff9f7aea),
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
@@ -249,7 +249,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff2f0743),
+                    backgroundColor: Color(0xff8813c5),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(

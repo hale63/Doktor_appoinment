@@ -25,23 +25,29 @@ class _PatientHomePageState extends State<PatientHomePage> {
     });
 
   }
-  Future<bool> _onWillPop() async{
-    return await showDialog(context: context,
-        builder: (context)=>AlertDialog(
-          content: Text('Uygulamadan çıkmak istiyor musunuz?'),
-          actions: <Widget>[
-          TextButton(onPressed: (){
-            Navigator.of(context).pop(false);
-            SystemNavigator.pop();
-          },child: Text("No")),
-
-            TextButton(onPressed: (){
-              Navigator.of(context).pop(true);
-              SystemNavigator.pop();
-            },child: Text("Yes")),
-            ],
-        ));
+  Future<bool> _onWillPop() async {
+    return await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text('Uygulamadan çıkmak istiyor musunuz?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Uygulama kapatılmaz
+            },
+            child: Text("No"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // onWillPop true döner, uygulama kapanır
+            },
+            child: Text("Yes"),
+          ),
+        ],
+      ),
+    ) ?? false; // null olursa false döndür (önlem amaçlı)
   }
+
 
   @override
   Widget build(BuildContext context) {
