@@ -64,10 +64,10 @@ class _DoctorChatlistPageState extends State<DoctorChatlistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Chat with'),),
+      appBar: AppBar(title: Text('Sohbet'),),
       body: _isLoading ? Center(child: CircularProgressIndicator())
           : _chatList.isEmpty
-          ? Center(child: Text('No chats available'))
+          ? Center(child: Text('Henüz görüşme yok'))
           : ListView.builder(
           itemCount: _chatList.length,
           itemBuilder: (context, index){
@@ -76,7 +76,7 @@ class _DoctorChatlistPageState extends State<DoctorChatlistPage> {
               elevation: 2.0,
               margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: ListTile(
-                title: Text('Chat with ${patient.firstName} ${patient.lastName}'),
+                title: Text('ile sohbet ${patient.firstName} ${patient.lastName}'),
                 onTap: (){
                   Navigator.of(context).push(
                       MaterialPageRoute(

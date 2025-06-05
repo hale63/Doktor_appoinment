@@ -30,20 +30,20 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
     return await showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Are you sure?'),
-          content: Text('Do you want to exit the app?'),
+          title: Text('Emin misiniz?'),
+          content: Text('Uygulamadan çıkmak istiyor musunuz?'),
           actions: <Widget>[
             TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
-                child: Text('No')),
+                child: Text('Hayır')),
             TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(true);
                   SystemNavigator.pop();
                 },
-                child: Text('Yes')),
+                child: Text('Evet')),
           ],
         ));
   }
@@ -65,17 +65,17 @@ class _DoctorHomePageState extends State<DoctorHomePage> {
                 icon: Icon(
                   Icons.home_filled,
                 ),
-                label: 'Home'),
+                label: 'Ana Sayfa'),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.chat,
                 ),
-                label: 'Chat'),
+                label: 'Sohbet'),
             BottomNavigationBarItem(
                 icon: Icon(
                   Icons.person,
                 ),
-                label: 'Profile'),
+                label: 'Profil'),
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: Colors.white,

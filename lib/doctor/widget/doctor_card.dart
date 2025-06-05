@@ -51,7 +51,7 @@ class DoctorCard extends StatelessWidget {
                   ),)
               ],),
               Text(
-                'Deneyim: ${doctor.yearsOfExperience} years',
+                'Deneyim: ${doctor.yearsOfExperience} yıl',
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.normal,
                   fontSize: 12,

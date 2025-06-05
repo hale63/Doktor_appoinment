@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'pages/notifications_page.dart';
+import 'pages/upcoming_appointments_page.dart';
 import 'auth/login_page.dart';
 import 'pages/privacy_security_page.dart';
 import 'pages/help_page.dart';
-
-
+import 'patient/patient_profile.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -20,21 +19,18 @@ class _ProfilePageState extends State<ProfilePage> {
   void _logout() async {
     await _auth.signOut();
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-            (Route<dynamic> route) => false);
-  }
-
-  void _navigateToNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const NotificationsPage()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
+          (Route<dynamic> route) => false,
     );
   }
 
   void _navigateToUpcomingAppointments() {
-    // Yaklaşan randevular sayfasına yönlendirme
-    print("Yaklaşan Randevularım sayfasına git");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UpcomingAppointmentsPage()),
+    );
   }
+
   void _navigateToHelp() {
     Navigator.push(
       context,
@@ -50,8 +46,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToEditProfile() {
-    // Profili düzenle sayfasına yönlendirme
-    print("Profili Düzenle sayfasına git");
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PatientUpdatePage()),
+    );
   }
 
   @override
@@ -139,21 +137,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontSize: 16,
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // Edit Button
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'Edit',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -166,16 +149,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    // Bildirimler
-                    _buildMenuItem(
-                      icon: Icons.notifications_outlined,
-                      iconColor: const Color(0xFFFF9500),
-                      title: 'Bildirimler',
-                      onTap: _navigateToNotifications,
-                    ),
-
-                    const SizedBox(height: 16),
-
                     // Yaklaşan Randevularım
                     _buildMenuItem(
                       icon: Icons.calendar_today_outlined,
@@ -206,15 +179,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     const SizedBox(height: 16),
 
-// Yardım
+                    // Yardım
                     _buildMenuItem(
                       icon: Icons.help_outline,
-                      iconColor: Color(0xFF2196F3),
+                      iconColor: const Color(0xFF2196F3),
                       title: 'Yardım',
                       onTap: _navigateToHelp,
                     ),
-                    const SizedBox(height: 16),
 
+                    const SizedBox(height: 16),
 
                     // Çıkış
                     _buildMenuItem(
@@ -264,7 +237,6 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             child: Row(
               children: [
-                // Icon Container
                 Container(
                   width: 40,
                   height: 40,
@@ -278,10 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     size: 22,
                   ),
                 ),
-
                 const SizedBox(width: 16),
-
-                // Title
                 Expanded(
                   child: Text(
                     title,
@@ -292,8 +261,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                 ),
-
-                // Arrow Icon
                 if (showArrow)
                   Icon(
                     Icons.arrow_forward_ios,

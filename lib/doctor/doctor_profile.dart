@@ -22,9 +22,9 @@ class _DoctorProfileState extends State<DoctorProfile> with TickerProviderStateM
   String phoneNumber = '';
   String firstName = '';
   String lastName = '';
-  String city = 'Bursa';
+  String city = 'İstanbul';
   String profileImageUrl = '';
-  String category = 'Dentist';
+  String category = 'Kardiyoloji';
   String qualification = '';
   String yearsOfExperience = '';
   double latitude = 0.0;

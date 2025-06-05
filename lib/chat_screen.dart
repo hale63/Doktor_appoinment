@@ -102,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
                       if (!snapshot.hasData ||
                           snapshot.data?.snapshot.value == null) {
-                        return Center(child: Text('No message yet.'));
+                        return Center(child: Text('Henüz mesaj yok.'));
                       }
                       Map<dynamic, dynamic> messagesMap = snapshot
                           .data!.snapshot.value as Map<dynamic, dynamic>;
@@ -178,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xffF0EFFF),
-                            hintText: 'Enter your message..',
+                            hintText: 'Mesajınızı girin.',
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:

@@ -67,10 +67,10 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Chat with'),),
+      appBar: AppBar(title: Text('Sohbet'),),
       body: _isLoading ? Center(child: CircularProgressIndicator())
           : _chatList.isEmpty
-          ? Center(child: Text('No chats available'))
+          ? Center(child: Text('Henüz görüşme yok'))
           : ListView.builder(
           itemCount: _chatList.length,
           itemBuilder: (context, index){

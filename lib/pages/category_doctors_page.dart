@@ -30,7 +30,7 @@ class _CategoryDoctorsPageState extends State<CategoryDoctorsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doctors by Category'),
+        title: Text('Kategorilere Göre Doktorlar'),
       ),
       body: Column(
         children: [
@@ -39,13 +39,13 @@ class _CategoryDoctorsPageState extends State<CategoryDoctorsPage> {
             child: DropdownButtonFormField<String>(
               value: _selectedCategory,
               decoration: InputDecoration(
-                labelText: 'Select Category',
+                labelText: 'Kategori Seçiniz',
                 border: OutlineInputBorder(),
               ),
               items: [
                 DropdownMenuItem(
                   value: null,
-                  child: Text('All Categories'),
+                  child: Text('Tüm Kategoriler'),
                 ),
                 ...widget.categories.map((category) {
                   return DropdownMenuItem(

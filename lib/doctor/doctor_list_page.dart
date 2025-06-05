@@ -72,7 +72,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
                 children: [
                   const SizedBox(height: 25),
                   Text(
-                    'Hİ👋🏻,',
+                    'Merhaba👋🏻,',
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -90,7 +90,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Find your doctor,\n and book an appointment',
+                    'Doktorunuzu bulun,\n ve randevu alın',
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -101,7 +101,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
 
               const SizedBox(height: 30),
               Text(
-                'our Categories ',
+                'Kategoriler ',
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
@@ -136,7 +136,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Top Doctors',
+                    'En İyi Doktorlar',
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -163,7 +163,7 @@ class _DoctorListPageState extends State<DoctorListPage> {
                       }
                     },
                     child: Text(
-                      'view all',
+                      'Tümünü Gör',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

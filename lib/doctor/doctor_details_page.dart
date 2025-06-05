@@ -29,7 +29,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Doctor Details'),
+        title: Text('Doktor Detayları'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -78,7 +78,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        'From: ${widget.doctor.city}',
+                        'Şehir: ${widget.doctor.city}',
                         // Example location; replace with actual data if available
                         style: GoogleFonts.poppins(
                           fontSize: 14,
@@ -151,7 +151,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                     _openMap();
                   },
                   child: Text(
-                    'VIEW LOCATION ON MAP',
+                    'HARİTADA KONUMU GÖSTER',
                     style: GoogleFonts.poppins(
                         fontSize: 16,
                         letterSpacing: 0.6,
@@ -161,7 +161,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
               ),
               SizedBox(height: 50),
               Text(
-                'Select Date & Time',
+                'Tarih ve Saat Seçin',
                 style: GoogleFonts.poppins(
                     fontSize: 17, fontWeight: FontWeight.w500),
               ),
@@ -194,8 +194,8 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                             onPressed: () => _selectDate(context),
                             child: Text(
                               _selectedDate == null
-                                  ? 'Select Date'
-                                  : DateFormat('MM/dd/yyyy')
+                                  ? 'Tarih Seç'
+                                  : DateFormat('dd/MM/yyyy')
                                   .format(_selectedDate!),
                               style: GoogleFonts.poppins(
                                   fontSize: 15, letterSpacing: 0.6),
@@ -216,7 +216,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                             onPressed: () => _selectTime(context),
                             child: Text(
                               _selectedTime == null
-                                  ? 'Select Time'
+                                  ? 'Saat Seç'
                                   : _selectedTime!.format(context),
                               style: GoogleFonts.poppins(
                                   fontSize: 15, letterSpacing: 0.6),
@@ -232,7 +232,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                           fontSize: 14, color: Colors.black),
                       maxLines: 3,
                       decoration: InputDecoration(
-                        hintText: 'Description',
+                        hintText: 'Açıklama',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -261,7 +261,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
                     _bookAppointment();
                   },
                   child: Text(
-                    'BOOK APPOINTMENT',
+                    'RANDEVU AL',
                     style: GoogleFonts.poppins(fontSize: 16, letterSpacing: 2),
                   ),
                 ),
@@ -308,7 +308,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
     if (await canLaunch(googleMapUrl)) {
       await launch(googleMapUrl);
     } else {
-      throw 'Could not open the map';
+      throw 'Harita açılamadı';
     }
   }
 
@@ -318,7 +318,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
     if (await canLaunch(phoneUri.toString())) {
       await launch(phoneUri.toString());
     } else {
-      throw 'Could not make a call on $phoneNumber this number';
+      throw '$phoneNumber numarasını arayamadı';
     }
   }
 
@@ -329,7 +329,7 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
         _selectedTime != null &&
         _descriptionController.text.isNotEmpty) {
       // date, time, des, requestId, receiverId, senderId, status
-      String date = DateFormat('MM/dd/yyyy').format(_selectedDate!);
+      String date = DateFormat('dd/MM/yyyy').format(_selectedDate!);
       String time = _selectedTime!.format(context);
       String description = _descriptionController.text;
       String requestId = _requestDatabase.push().key!;
@@ -353,16 +353,16 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
           _descriptionController.clear();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Appointment booked successfully')));
+            SnackBar(content: Text('Randevu başarıyla alındı')));
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content:
-            Text('Failed to book your appointment, Try Again later!!')));
+            Text('Randevu alınamadı, daha sonra tekrar deneyin!')));
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-              'Select a date and time also add a description for appointment')));
+              'Randevu için tarih, saat seçin ve açıklama ekleyin')));
     }
   }
 }

@@ -48,13 +48,17 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'Kabul et':
+      case 'accepted':
+      case 'kabul edildi':
         return Colors.green;
-      case 'Reddet':
+      case 'rejected':
+      case 'reddedildi':
         return Colors.red;
-      case 'Tamamlandı':
+      case 'completed':
+      case 'tamamlandı':
         return Colors.blue;
-      case 'Yakında':
+      case 'pending':
+      case 'beklemede':
       default:
         return Colors.orange;
     }
@@ -62,15 +66,34 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
 
   IconData _getStatusIcon(String status) {
     switch (status.toLowerCase()) {
-      case 'Kabul et':
+      case 'accepted':
+      case 'kabul edildi':
         return Icons.check_circle;
-      case 'Reddet':
+      case 'rejected':
+      case 'reddedildi':
         return Icons.cancel;
-      case 'Tamamlandı':
+      case 'completed':
+      case 'tamamlandı':
         return Icons.task_alt;
-      case 'Yakında':
+      case 'pending':
+      case 'beklemede':
       default:
         return Icons.pending;
+    }
+  }
+
+  String _getStatusDisplayText(String status) {
+    switch (status.toLowerCase()) {
+      case 'accepted':
+        return 'Kabul Edildi';
+      case 'rejected':
+        return 'Reddedildi';
+      case 'completed':
+        return 'Tamamlandı';
+      case 'pending':
+        return 'Beklemede';
+      default:
+        return status;
     }
   }
 
@@ -189,7 +212,7 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    booking.status,
+                                    _getStatusDisplayText(booking.status),
                                     style: TextStyle(
                                       color: _getStatusColor(booking.status),
                                       fontWeight: FontWeight.w600,
@@ -296,7 +319,7 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
   }
 
   void _showStatusDialog(String requestId, String currentStatus) {
-    List<String> statuses = ['Kabul et', 'Reddet', 'Tamamlandı'];
+    List<String> statuses = ['Accepted', 'Rejected', 'Completed'];
     List<String> statusLabels = ['Kabul Et', 'Reddet', 'Tamamlandı'];
     String selectedStatus = currentStatus;
 
@@ -320,7 +343,7 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Bu randevu için durumu seçiniz:',
+                    'Bu randevu için durum seçiniz:',
                     style: TextStyle(
                       fontSize: 16,
                       color: Color(0xFF374151),
@@ -409,7 +432,7 @@ class _DoctorRequestsPageState extends State<DoctorRequestsPage> {
 
   Future<void> _updateRequestStatus(String requestId, String status) async {
     await _requestDatabase.child(requestId).update({
-      'Durum': status,
+      'status': status,
     });
     await _fetchBookings();
   }

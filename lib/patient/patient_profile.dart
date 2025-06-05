@@ -1,5 +1,3 @@
-import 'package:doktor_randevu/doctor/doctor_home_page.dart';
-import 'package:doktor_randevu/patient/patient_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -8,29 +6,24 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:location/location.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class PatientUpdatePage extends StatefulWidget {
+  const PatientUpdatePage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<PatientUpdatePage> createState() => _PatientUpdatePageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMixin {
+class _PatientUpdatePageState extends State<PatientUpdatePage> with TickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   final _formKey = GlobalKey<FormState>();
-  String userType = 'Patient';
   String email = '';
-  String password = '';
   String phoneNumber = '';
   String firstName = '';
   String lastName = '';
   String city = 'İstanbul';
   String profileImageUrl = '';
-  String category = 'Kardiyoloji';
-  String qualification = '';
-  String yearsOfExperience = '';
   double latitude = 0.0;
   double longitude = 0.0;
 
@@ -39,6 +32,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
   final Location _location = Location();
   bool _isLoading = false;
+  bool _isDataLoaded = false;
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -60,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
-    _animationController.forward();
+    _loadPatientData();
   }
 
   @override
@@ -69,12 +63,62 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     super.dispose();
   }
 
+  Future<void> _loadPatientData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      User? user = _auth.currentUser;
+      if (user != null) {
+        DatabaseEvent event = await _database.child('Patients').child(user.uid).once();
+        if (event.snapshot.exists) {
+          Map<String, dynamic> data = Map<String, dynamic>.from(event.snapshot.value as Map);
+
+          setState(() {
+            email = data['email'] ?? '';
+            phoneNumber = data['phoneNumber'] ?? '';
+            firstName = data['firstName'] ?? '';
+            lastName = data['lastName'] ?? '';
+            city = data['city'] ?? 'İstanbul';
+            profileImageUrl = data['profileImageUrl'] ?? '';
+            latitude = (data['latitude'] ?? 0.0).toDouble();
+            longitude = (data['longitude'] ?? 0.0).toDouble();
+            _isDataLoaded = true;
+          });
+        }
+      }
+    } catch (e) {
+      _showErrorDialog('Veriler yüklenirken hata oluştu: ${e.toString()}');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+      _animationController.forward();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundPurple,
+      appBar: AppBar(
+        backgroundColor: primaryPurple,
+        elevation: 0,
+        title: const Text(
+          'Bilgilerimi Güncelle',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: SafeArea(
-        child: _isLoading ? _buildLoadingWidget() : _buildRegisterForm(),
+        child: _isLoading ? _buildLoadingWidget() : _buildUpdateForm(),
       ),
     );
   }
@@ -98,7 +142,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
             ),
             SizedBox(height: 20),
             Text(
-              'Hesabınız oluşturuluyor...',
+              'Bilgileriniz yükleniyor...',
               style: TextStyle(
                 color: darkPurple,
                 fontSize: 16,
@@ -111,7 +155,16 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     );
   }
 
-  Widget _buildRegisterForm() {
+  Widget _buildUpdateForm() {
+    if (!_isDataLoaded) {
+      return const Center(
+        child: Text(
+          'Bilgiler yüklenemedi',
+          style: TextStyle(color: darkPurple, fontSize: 16),
+        ),
+      );
+    }
+
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Container(
@@ -140,7 +193,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       child: Column(
         children: [
           Container(
@@ -157,14 +210,14 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
               ],
             ),
             child: const Icon(
-              Icons.medical_services,
+              Icons.person,
               size: 50,
               color: primaryPurple,
             ),
           ),
           const SizedBox(height: 20),
           const Text(
-            'Hesap Oluştur',
+            'Hasta Bilgileri',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -173,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           ),
           const SizedBox(height: 8),
           Text(
-            'Sağlık hizmetlerine erişim için kayıt olun',
+            'Kişisel bilgilerinizi güncelleyin',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
@@ -184,24 +237,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       ),
     );
   }
-  Widget _buildAreadyHaveAccountButton() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        onPressed: () {
-          // Şifre sıfırlama işlemi
-        },
-        child: Text(
-          'I have account?',
-          style: TextStyle(
-            color: primaryPurple,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-      ),
-    );
-  }
+
   Widget _buildFormContainer() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -220,28 +256,22 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       ),
       child: Column(
         children: [
-          _buildUserTypeSelector(),
+          _buildImageUploadSection(),
           const SizedBox(height: 25),
           _buildTextField(
             label: 'Email Adresi',
             icon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
+            initialValue: email,
             onChanged: (val) => email = val,
             validator: (val) => val!.isEmpty ? 'Lütfen email adresinizi girin' : null,
-          ),
-          const SizedBox(height: 20),
-          _buildTextField(
-            label: 'Şifre',
-            icon: Icons.lock_outline,
-            obscureText: true,
-            onChanged: (val) => password = val,
-            validator: (val) => val!.length < 6 ? 'Şifreniz en az 6 karakter olmalıdır' : null,
           ),
           const SizedBox(height: 20),
           _buildTextField(
             label: 'Telefon Numarası',
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
+            initialValue: phoneNumber,
             onChanged: (val) => phoneNumber = val,
             validator: (val) => val!.isEmpty ? 'Lütfen telefon numaranızı girin' : null,
           ),
@@ -252,6 +282,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                 child: _buildTextField(
                   label: 'Ad',
                   icon: Icons.person_outline,
+                  initialValue: firstName,
                   onChanged: (val) => firstName = val,
                   validator: (val) => val!.isEmpty ? 'Lütfen adınızı girin' : null,
                 ),
@@ -261,6 +292,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                 child: _buildTextField(
                   label: 'Soyad',
                   icon: Icons.person_outline,
+                  initialValue: lastName,
                   onChanged: (val) => lastName = val,
                   validator: (val) => val!.isEmpty ? 'Lütfen soyadınızı girin' : null,
                 ),
@@ -270,71 +302,10 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           const SizedBox(height: 20),
           _buildCityDropdown(),
           const SizedBox(height: 25),
-          _buildImageUploadSection(),
-          if (userType == 'Doctor') ...[
-            const SizedBox(height: 25),
-            _buildDoctorFields(),
-          ],
-          const SizedBox(height: 25),
           _buildLocationSection(),
           const SizedBox(height: 30),
-          _buildRegisterButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserTypeSelector() {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: accentPurple.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => userType = 'Patient'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                decoration: BoxDecoration(
-                  color: userType == 'Patient' ? primaryPurple : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Hasta',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: userType == 'Patient' ? Colors.white : darkPurple,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => userType = 'Doctor'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                decoration: BoxDecoration(
-                  color: userType == 'Doctor' ? primaryPurple : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Doktor',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: userType == 'Doctor' ? Colors.white : darkPurple,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildUpdateButton(),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -345,10 +316,12 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     required IconData icon,
     TextInputType? keyboardType,
     bool obscureText = false,
+    String? initialValue,
     required Function(String) onChanged,
     required String? Function(String?) validator,
   }) {
     return TextFormField(
+      initialValue: initialValue,
       keyboardType: keyboardType,
       obscureText: obscureText,
       onChanged: onChanged,
@@ -432,12 +405,40 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                   fit: BoxFit.cover,
                 ),
               ),
+            )
+          else if (profileImageUrl.isNotEmpty)
+            Container(
+              margin: const EdgeInsets.only(bottom: 15),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                  profileImageUrl,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: primaryPurple.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 50,
+                        color: primaryPurple,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ElevatedButton.icon(
             onPressed: _pickImage,
             icon: const Icon(Icons.camera_alt, color: Colors.white),
             label: Text(
-              _imageFile != null ? 'Fotoğrafı Değiştir' : 'Profil Fotoğrafı',
+              (_imageFile != null || profileImageUrl.isNotEmpty) ? 'Fotoğrafı Değiştir' : 'Profil Fotoğrafı Ekle',
               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
@@ -447,76 +448,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDoctorFields() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: lightPurple.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: lightPurple.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Doktor Bilgileri',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: darkPurple,
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildTextField(
-            label: 'Eğitim/Vasıf',
-            icon: Icons.school_outlined,
-            onChanged: (val) => qualification = val,
-            validator: (val) => val!.isEmpty ? 'Lütfen vasfınızı girin' : null,
-          ),
-          const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: DropdownButtonFormField<String>(
-              value: category,
-              decoration: InputDecoration(
-                labelText: 'Uzmanlık Alanı',
-                prefixIcon: const Icon(Icons.medical_services, color: primaryPurple),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: primaryPurple, width: 2),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              ),
-              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi' ].map((String cat) {
-                return DropdownMenuItem(
-                  value: cat,
-                  child: Text(cat),
-                );
-              }).toList(),
-              onChanged: (val) => setState(() => category = val!),
-              validator: (val) => val == null ? 'Kategori seçin' : null,
-            ),
-          ),
-          const SizedBox(height: 20),
-          _buildTextField(
-            label: 'Deneyim Yılı',
-            icon: Icons.work_outline,
-            keyboardType: TextInputType.number,
-            onChanged: (val) => yearsOfExperience = val,
-            validator: (val) => val!.isEmpty ? 'Lütfen deneyim yılınızı girin' : null,
           ),
         ],
       ),
@@ -563,7 +494,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Konum alındı: (${latitude.toStringAsFixed(4)}, ${longitude.toStringAsFixed(4)})',
+                      'Konum mevcut: (${latitude.toStringAsFixed(4)}, ${longitude.toStringAsFixed(4)})',
                       style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
                     ),
                   ),
@@ -580,7 +511,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
             onPressed: _getLocation,
             icon: const Icon(Icons.my_location, color: Colors.white),
             label: const Text(
-              'Konumu Al',
+              'Konumu Güncelle',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
@@ -596,7 +527,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     );
   }
 
-  Widget _buildRegisterButton() {
+  Widget _buildUpdateButton() {
     return Container(
       width: double.infinity,
       height: 55,
@@ -617,7 +548,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
         ],
       ),
       child: ElevatedButton(
-        onPressed: _register,
+        onPressed: _updatePatientInfo,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -626,7 +557,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           ),
         ),
         child: const Text(
-          'Hesap Oluştur',
+          'Bilgileri Güncelle',
           style: TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -651,105 +582,59 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
         latitude = locationData.latitude!;
         longitude = locationData.longitude!;
       });
+      _showSuccessDialog('Konum başarıyla güncellendi');
     } catch (e) {
       _showErrorDialog('Konum alınamadı: ${e.toString()}');
     }
   }
 
-  Future<void> _register() async {
+  Future<void> _updatePatientInfo() async {
     if (_formKey.currentState!.validate()) {
-      if (latitude == 0.0 || longitude == 0.0) {
-        _showErrorDialog('Lütfen konum bilgisini alın');
-        return;
-      }
-
       setState(() {
         _isLoading = true;
       });
 
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        User? user = userCredential.user;
-
+        User? user = _auth.currentUser;
         if (user != null) {
-          String userTypePath = userType == 'Doctor' ? 'Doctors' : 'Patients';
+          String finalImageUrl = profileImageUrl;
 
-          // 2. ÖNE Resmi yükle ve URL'yi al
-          String finalImageUrl = '';
+          // Yeni resim seçilmişse önce yükle
           if (_imageFile != null) {
             try {
               Reference storageReference = FirebaseStorage.instance
                   .ref()
-                  .child('$userTypePath/${user.uid}/profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
+                  .child('Patients/${user.uid}/profile_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
               UploadTask uploadTask = storageReference.putFile(File(_imageFile!.path));
               TaskSnapshot taskSnapshot = await uploadTask;
               finalImageUrl = await taskSnapshot.ref.getDownloadURL();
 
-              print('✅ Resim başarıyla yüklendi: $finalImageUrl');
-
-              // State'i güncelle
-              setState(() {
-                profileImageUrl = finalImageUrl;
-              });
-
+              print('✅ Resim başarıyla güncellendi: $finalImageUrl');
             } catch (e) {
-              print('❌ Resim yükleme hatası: $e');
-              // Resim yüklenemese bile kayıt işlemi devam etsin
-              finalImageUrl = '';
+              print('❌ Resim güncelleme hatası: $e');
+              _showErrorDialog('Resim güncellenirken hata oluştu, diğer bilgiler güncellendi');
             }
           }
 
-
-          Map<String, dynamic> userData = {
-            'uid': user.uid,
+          Map<String, dynamic> updateData = {
             'email': email,
             'phoneNumber': phoneNumber,
             'firstName': firstName,
             'lastName': lastName,
             'city': city,
-            //'profileImageUrl': profileImageUrl,
-            'profileImageUrl': finalImageUrl, // ← Artık doğru URL burada
+            'profileImageUrl': finalImageUrl,
             'latitude': latitude,
             'longitude': longitude,
+            'lastUpdated': DateTime.now().toIso8601String(),
           };
 
-          if (userType == 'Doctor') {
-            userData['qualification'] = qualification;
-            userData['category'] = category;
-            userData['yearsOfExperience'] = yearsOfExperience;
-            userData['totalReviews'] = 0;
-            userData['averageRating'] = 0.0;
-            userData['numberOfReviews'] = 0;
-          }
+          await _database.child('Patients').child(user.uid).update(updateData);
 
-          await _database.child(userTypePath).child(user.uid).set(userData);
-
-          if (_imageFile != null) {
-            Reference storageReference = FirebaseStorage.instance
-                .ref()
-                .child('$userTypePath/${user.uid}/profile.jpg');
-            UploadTask uploadTask = storageReference.putFile(File(_imageFile!.path));
-            TaskSnapshot taskSnapshot = await uploadTask;
-
-            String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-            await _database.child(userTypePath).child(user.uid).update({
-              'profileImageUrl': downloadUrl,
-            });
-          }
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) =>
-              userType == 'Doctor' ? DoctorHomePage() : PatientHomePage(),
-            ),
-          );
+          _showSuccessDialog('Bilgileriniz başarıyla güncellendi');
         }
       } catch (e) {
-        _showErrorDialog(e.toString());
+        _showErrorDialog('Güncelleme sırasında hata oluştu: ${e.toString()}');
       } finally {
         setState(() {
           _isLoading = false;
@@ -782,6 +667,45 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
               onPressed: () => Navigator.of(context).pop(),
               style: TextButton.styleFrom(
                 backgroundColor: primaryPurple,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Tamam',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text(
+            'Başarılı',
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            message,
+            style: const TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.green,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),

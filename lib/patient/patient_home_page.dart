@@ -35,13 +35,13 @@ class _PatientHomePageState extends State<PatientHomePage> {
             onPressed: () {
               Navigator.of(context).pop(false); // Uygulama kapatılmaz
             },
-            child: Text("No"),
+            child: Text("Hayır"),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(true); // onWillPop true döner, uygulama kapanır
             },
-            child: Text("Yes"),
+            child: Text("Evet"),
           ),
         ],
       ),
@@ -59,15 +59,15 @@ class _PatientHomePageState extends State<PatientHomePage> {
               BottomNavigationBarItem(
                   icon: Icon(Icons.home_filled,
                   ),
-              label: 'Home'),
+              label: 'Ana Sayfa'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.chat,
                   ),
-                  label: 'chat'),
+                  label: 'Sohbet'),
               BottomNavigationBarItem(
                   icon: Icon(Icons.person,
                   ),
-                  label: 'Profile'),
+                  label: 'Profil'),
             ],
             currentIndex: _selectedIndex,
           selectedItemColor:Colors.purpleAccent,
