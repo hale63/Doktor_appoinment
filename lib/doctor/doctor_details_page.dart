@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../chat_screen.dart';
 import 'model/doctor.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 
 class DoctorDetailPage extends StatefulWidget {
   final Doctor doctor;
@@ -313,56 +314,88 @@ class _DoctorDetailPageState extends State<DoctorDetailPage> {
   }
 
   // phone call
+  // void _makePhoneCall(String phoneNumber) async {
+  //   final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+  //   if (await canLaunch(phoneUri.toString())) {
+  //     await launch(phoneUri.toString());
+  //   } else {
+  //     throw '$phoneNumber numarasını arayamadı';
+  //   }
+  // }
   void _makePhoneCall(String phoneNumber) async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
-    if (await canLaunch(phoneUri.toString())) {
-      await launch(phoneUri.toString());
-    } else {
-      throw '$phoneNumber numarasını arayamadı';
+    try {
+      await Haptics.vibrate(HapticsType.light); // Arama başlatılırken
+
+      final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+      if (await canLaunch(phoneUri.toString())) {
+        await launch(phoneUri.toString());
+      } else {
+        await Haptics.vibrate(HapticsType.error); // Hata durumunda
+        throw '$phoneNumber numarasını arayamadı';
+      }
+    } catch (e) {
+      await Haptics.vibrate(HapticsType.error);
+      rethrow;
     }
   }
 
   // appointment
 
-  void _bookAppointment() {
+  // appointment fonksiyonunu güncelliyoruz
+  void _bookAppointment() async {  // async ekliyoruz
     if (_selectedDate != null &&
         _selectedTime != null &&
         _descriptionController.text.isNotEmpty) {
-      // date, time, des, requestId, receiverId, senderId, status
-      String date = DateFormat('dd/MM/yyyy').format(_selectedDate!);
-      String time = _selectedTime!.format(context);
-      String description = _descriptionController.text;
-      String requestId = _requestDatabase.push().key!;
-      String currentUserId = _auth.currentUser!.uid;
-      String receiverId = widget.doctor.uid;
-      String status = 'pending';
+      try {
+        // 1. Randevu talebi başladığında hafif titreşim
+        await Haptics.vibrate(HapticsType.light);
 
-      //save appointment
-      _requestDatabase.child(requestId).set({
-        'date': date,
-        'time': time,
-        'description': description,
-        'id': requestId,
-        'receiver': receiverId,
-        'sender': currentUserId,
-        'status': status,
-      }).then((_) {
+        String date = DateFormat('dd/MM/yyyy').format(_selectedDate!);
+        String time = _selectedTime!.format(context);
+        String description = _descriptionController.text;
+        String requestId = _requestDatabase.push().key!;
+        String currentUserId = _auth.currentUser!.uid;
+        String receiverId = widget.doctor.uid;
+        String status = 'pending';
+
+        // 2. Randevu kaydetme işlemi
+        await _requestDatabase.child(requestId).set({
+          'date': date,
+          'time': time,
+          'description': description,
+          'id': requestId,
+          'receiver': receiverId,
+          'sender': currentUserId,
+          'status': status,
+        });
+
+        // 3. Başarılı titreşim
+        await Haptics.vibrate(HapticsType.success);
+
         setState(() {
           _selectedDate = null;
           _selectedTime = null;
           _descriptionController.clear();
         });
+
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Randevu başarıyla alındı')));
-      }).catchError((error) {
+      } catch (error) {
+        // 4. Hata titreşimi
+        await Haptics.vibrate(HapticsType.error);
+
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:
-            Text('Randevu alınamadı, daha sonra tekrar deneyin!')));
-      });
+            content: Text('Randevu alınamadı, daha sonra tekrar deneyin!')));
+      }
     } else {
+      // 5. Eksik bilgi uyarısı titreşimi
+      await Haptics.vibrate(HapticsType.warning);
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'Randevu için tarih, saat seçin ve açıklama ekleyin')));
+          content: Text('Randevu için tarih, saat seçin ve açıklama ekleyin')));
     }
   }
+
+// Telefon arama fonksiyonuna da ekleyebiliriz
+
 }

@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Booking {
   final String date;
   final String description;
@@ -39,5 +41,16 @@ class Booking {
       'status': status,
       'time': time,
     };
+  }
+  DateTime get appointmentDateTime {
+    final dateFormat = DateFormat('dd MMMM yyyy', 'tr_TR');
+    final timeFormat = DateFormat('HH:mm');
+    return DateTime(
+      dateFormat.parse(date).year,
+      dateFormat.parse(date).month,
+      dateFormat.parse(date).day,
+      timeFormat.parse(time).hour,
+      timeFormat.parse(time).minute,
+    );
   }
 }

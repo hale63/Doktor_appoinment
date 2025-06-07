@@ -71,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
                  padding: const EdgeInsets.only(top:50.0,right:10.0),
                  child: Text(
                    textAlign:TextAlign.end,
-                   'Hoş Geldiniz\n DocZil ',
+                   'Hoş Geldiniz\n DokYo ',
                    style: GoogleFonts.poppins(fontSize:28,color: Colors.white,fontWeight:FontWeight.bold),
                  ),
                ),

@@ -430,23 +430,23 @@ class _DoctorProfileState extends State<DoctorProfile> with TickerProviderStateM
                 ),
               ),
             ),
-          ElevatedButton.icon(
-            onPressed: _pickImage,
-            icon: const Icon(Icons.camera_alt, color: Colors.white),
-            label: Text(
-              (_imageFile != null || profileImageUrl.isNotEmpty)
-                  ? 'Fotoğrafı Değiştir'
-                  : 'Profil Fotoğrafı Ekle',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primaryPurple,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
+          // ElevatedButton.icon(
+          //   onPressed: _pickImage,
+          //   icon: const Icon(Icons.camera_alt, color: Colors.white),
+          //   label: Text(
+          //     (_imageFile != null || profileImageUrl.isNotEmpty)
+          //         ? 'Fotoğrafı Değiştir'
+          //         : 'Profil Fotoğrafı Ekle',
+          //     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          //   ),
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor: primaryPurple,
+          //     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(10),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

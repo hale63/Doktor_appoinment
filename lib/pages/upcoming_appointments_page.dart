@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -209,6 +211,23 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
   }
 
   Widget _buildBookingCard(Booking booking) {
+    // Randevu tarihini DateTime'a çevirme
+    final dateParts = booking.date.split('.');
+    final timeParts = booking.time.split(':');
+    DateTime appointmentDateTime;
+
+    try {
+      appointmentDateTime = DateTime(
+        int.parse(dateParts[2]), // yıl
+        int.parse(dateParts[1]), // ay
+        int.parse(dateParts[0]), // gün
+        int.parse(timeParts[0]), // saat
+        int.parse(timeParts[1]), // dakika
+      );
+    } catch (e) {
+      appointmentDateTime = DateTime.now().add(const Duration(days: 1));
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -327,6 +346,12 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
                           ),
                         ],
                       ),
+
+                      // Countdown widget'ını buraya ekliyoruz
+                      if (booking.status.toLowerCase() == 'accepted' ||
+                          booking.status.toLowerCase() == 'confirmed' ||
+                          booking.status.toLowerCase() == 'onaylandı')
+                        CountdownWidget(appointmentTime: appointmentDateTime),
                     ],
                   ),
                 ),
@@ -363,6 +388,84 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[500],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class CountdownWidget extends StatefulWidget {
+  final DateTime appointmentTime;
+
+  const CountdownWidget({super.key, required this.appointmentTime});
+
+  @override
+  State<CountdownWidget> createState() => _CountdownWidgetState();
+}
+
+class _CountdownWidgetState extends State<CountdownWidget> {
+  late Timer _timer;
+  Duration _remainingTime = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _calculateRemainingTime();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _calculateRemainingTime();
+    });
+  }
+
+  void _calculateRemainingTime() {
+    final now = DateTime.now();
+    final difference = widget.appointmentTime.difference(now);
+
+    setState(() {
+      _remainingTime = difference.isNegative ? Duration.zero : difference;
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final days = duration.inDays;
+    final hours = duration.inHours % 24;
+    final minutes = duration.inMinutes % 60;
+    final seconds = duration.inSeconds % 60;
+
+    if (days > 0) {
+      return '${days}g ${twoDigits(hours)}s ${twoDigits(minutes)}d';
+    } else {
+      return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF6B46C1).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, size: 16, color: Color(0xFF6B46C1)),
+          const SizedBox(width: 4),
+          Text(
+            _remainingTime.isNegative ? 'Randevu zamanı geçti' : 'Kalan: ${_formatDuration(_remainingTime)}',
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF6B46C1),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
