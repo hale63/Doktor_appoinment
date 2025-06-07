@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:doktor_randevu/doctor/model/doctor.dart';
 import 'package:doktor_randevu/doctor/widget/doctor_card.dart';
+import '../doctor/doctor_details_page.dart';
 
 class CategoryDoctorsPage extends StatefulWidget {
   final List<Doctor> doctors;
@@ -65,7 +66,19 @@ class _CategoryDoctorsPageState extends State<CategoryDoctorsPage> {
             child: ListView.builder(
               itemCount: filteredDoctors.length,
               itemBuilder: (context, index) {
-                return DoctorCard(doctor: filteredDoctors[index]);
+                final doctor = filteredDoctors[index];
+                return GestureDetector(
+                  onTap: () {
+                    // Doktor kartına tıklanınca detay sayfasına git
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DoctorDetailPage(doctor: doctor),
+                      ),
+                    );
+                  },
+                  child: DoctorCard(doctor: doctor),
+                );
               },
             ),
           ),
