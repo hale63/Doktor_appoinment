@@ -1,3 +1,4 @@
+import 'package:doktor_randevu/auth/login_page.dart';
 import 'package:doktor_randevu/doctor/doctor_home_page.dart';
 import 'package:doktor_randevu/patient/patient_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -500,7 +501,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
-              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi' ].map((String cat) {
+              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi','Neurology','Dermatology' ].map((String cat) {
                 return DropdownMenuItem(
                   value: cat,
                   child: Text(cat),
@@ -744,7 +745,8 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) =>
-              userType == 'Doctor' ? DoctorHomePage() : PatientHomePage(),
+             // userType == 'Doctor' ? DoctorHomePage() : PatientHomePage(),
+              userType == 'Doctor' ? LoginPage() : LoginPage(),
             ),
           );
         }
