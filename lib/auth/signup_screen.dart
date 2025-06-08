@@ -1,3 +1,4 @@
+eski register
 import 'package:doktor_randevu/doctor/doctor_home_page.dart';
 import 'package:doktor_randevu/patient/patient_home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
