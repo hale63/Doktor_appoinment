@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doktor_randevu/auth/forgot_password_page.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -20,11 +19,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   String email = '';
   String password = '';
   bool _isLoading = false;
   bool _isNavigation = false;
   bool _isPasswordVisible = false;
+  bool _rememberMe = false;
 
   late AnimationController _animationController;
   late AnimationController _pulseController;
@@ -63,13 +66,51 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
     _animationController.forward();
     _pulseController.repeat(reverse: true);
+
+    // Kaydedilmiş bilgileri yükle
+    _loadSavedCredentials();
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     _pulseController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  // Kaydedilmiş bilgileri yükleme
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('saved_email') ?? '';
+    final savedPassword = prefs.getString('saved_password') ?? '';
+    final rememberMe = prefs.getBool('remember_me') ?? false;
+
+    if (rememberMe && savedEmail.isNotEmpty && savedPassword.isNotEmpty) {
+      setState(() {
+        _emailController.text = savedEmail;
+        _passwordController.text = savedPassword;
+        email = savedEmail;
+        password = savedPassword;
+        _rememberMe = rememberMe;
+      });
+    }
+  }
+
+  // Bilgileri kaydetme/silme
+  Future<void> _saveCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (_rememberMe) {
+      await prefs.setString('saved_email', email);
+      await prefs.setString('saved_password', password);
+      await prefs.setBool('remember_me', true);
+    } else {
+      await prefs.remove('saved_email');
+      await prefs.remove('saved_password');
+      await prefs.setBool('remember_me', false);
+    }
   }
 
   @override
@@ -255,6 +296,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           _buildEmailField(),
           const SizedBox(height: 25),
           _buildPasswordField(),
+          const SizedBox(height: 20),
+          _buildRememberMeCheckbox(),
           const SizedBox(height: 15),
           _buildForgotPasswordButton(),
           const SizedBox(height: 35),
@@ -266,6 +309,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget _buildEmailField() {
     return TextFormField(
+      controller: _emailController,
       keyboardType: TextInputType.emailAddress,
       onChanged: (val) => email = val,
       validator: (val) => val!.isEmpty ? 'Lütfen email adresinizi girin' : null,
@@ -303,6 +347,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   Widget _buildPasswordField() {
     return TextFormField(
+      controller: _passwordController,
       obscureText: !_isPasswordVisible,
       onChanged: (val) => password = val,
       validator: (val) => val!.length < 6 ? 'Şifreniz en az 6 karakter olmalıdır' : null,
@@ -342,6 +387,47 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
+    );
+  }
+
+  // Yeni: Beni Hatırla Checkbox'ı
+  Widget _buildRememberMeCheckbox() {
+    return Row(
+      children: [
+        Transform.scale(
+          scale: 1.2,
+          child: Checkbox(
+            value: _rememberMe,
+            onChanged: (value) {
+              setState(() {
+                _rememberMe = value ?? false;
+              });
+            },
+            activeColor: primaryPurple,
+            checkColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+        const SizedBox(width: 5),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _rememberMe = !_rememberMe;
+            });
+          },
+          child: Text(
+            'Beni Hatırla',
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        const Spacer(),
+      ],
     );
   }
 
@@ -508,6 +594,10 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       setState(() {
         _isLoading = true;
       });
+
+      // Beni hatırla bilgilerini kaydet
+      await _saveCredentials();
+
       try {
         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
@@ -538,7 +628,17 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
           }
         }
       } catch (e) {
-        // Hata işleme kodu...
+        String errorMessage = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+        if (e.toString().contains('user-not-found')) {
+          errorMessage = 'Bu email adresi ile kayıtlı kullanıcı bulunamadı.';
+        } else if (e.toString().contains('wrong-password')) {
+          errorMessage = 'Hatalı şifre girdiniz.';
+        } else if (e.toString().contains('invalid-email')) {
+          errorMessage = 'Geçersiz email adresi.';
+        } else if (e.toString().contains('user-disabled')) {
+          errorMessage = 'Bu hesap devre dışı bırakılmış.';
+        }
+        _showErrorDialog(errorMessage);
       } finally {
         setState(() {
           _isLoading = false;

@@ -5,6 +5,7 @@ import 'package:doktor_randevu/doctor/doctor_details_page.dart';
 import 'package:doktor_randevu/doctor/model/doctor.dart';
 import 'package:doktor_randevu/doctor/widget/doctor_card.dart';
 import '../pages/category_doctors_page.dart';
+import 'category_page.dart';
 
 class DoctorListPage extends StatefulWidget {
   const DoctorListPage({super.key});
@@ -82,7 +83,10 @@ class _DoctorListPageState extends State<DoctorListPage> {
                   const SizedBox(height: 16),
                   Image.asset(
                     'assets/banner.png',
-                    width: MediaQuery.of(context).size.width,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
                     height: 150,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) =>
@@ -148,12 +152,13 @@ class _DoctorListPageState extends State<DoctorListPage> {
                       final selected = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CategoryDoctorsPage(
-                            doctors: _doctors,
-                            categories: categories
-                                .map((e) => e['title']!)
-                                .toList(),
-                          ),
+                          builder: (context) =>
+                              CategoryDoctorsPage(
+                                doctors: _doctors,
+                                categories: categories
+                                    .map((e) => e['title']!)
+                                    .toList(),
+                              ),
                         ),
                       );
 
@@ -201,44 +206,65 @@ class _DoctorListPageState extends State<DoctorListPage> {
     );
   }
 
-  Widget _buildRoundCategoryCard(
-      BuildContext context, String title, String imagePath,
-      {bool isHighlighed = false}) {
-    return Column(
-      children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-            color: isHighlighed ? const Color(0xff9f7aea) : const Color(0xffF0EFFF),
-            shape: BoxShape.circle,
-            border: isHighlighed
-                ? null
-                : Border.all(color: const Color(0xffC8C4FF), width: 2),
+  Widget _buildRoundCategoryCard(BuildContext context,
+      String title,
+      String imagePath, {
+        bool isHighlighed = false,
+      }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                CategoryPage(
+                  categoryName: title,
+                  doctors: _doctors,
+                ),
           ),
-          child: Center(
-            child: Image.asset(
-              imagePath,
-              width: 30,
-              height: 30,
-              color: isHighlighed ? Colors.white : null,
-              errorBuilder: (context, error, stackTrace) =>
-                  Icon(Icons.medical_services,
+        );
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: isHighlighed ? const Color(0xff9f7aea) : const Color(
+                  0xffF0EFFF),
+              shape: BoxShape.circle,
+              border: isHighlighed
+                  ? null
+                  : Border.all(color: const Color(0xffC8C4FF), width: 2),
+            ),
+            child: Center(
+              child: Image.asset(
+                imagePath,
+                width: 30,
+                height: 30,
+                color: isHighlighed ? Colors.white : null,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(
+                      Icons.medical_services,
                       size: 30,
-                      color: isHighlighed ? Colors.white : const Color(0xff951bd1)),
+                      color: isHighlighed ? Colors.white : const Color(
+                          0xff951bd1),
+                    ),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: isHighlighed ? const Color(0xff8813c5) : Colors.grey.shade600,
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: isHighlighed ? const Color(0xff8813c5) : Colors.grey
+                  .shade600,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
