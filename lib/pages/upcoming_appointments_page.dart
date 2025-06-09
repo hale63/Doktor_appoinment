@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -108,6 +107,47 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
     }
   }
 
+  // Tarih parsing fonksiyonunu düzelttik
+  DateTime? _parseAppointmentDateTime(String date, String time) {
+    try {
+      // Tarih formatını kontrol et (DD.MM.YYYY veya DD/MM/YYYY)
+      List<String> dateParts;
+      if (date.contains('.')) {
+        dateParts = date.split('.');
+      } else if (date.contains('/')) {
+        dateParts = date.split('/');
+      } else {
+        return null;
+      }
+
+      // Saat formatını kontrol et (HH:MM)
+      final timeParts = time.split(':');
+
+      if (dateParts.length != 3 || timeParts.length != 2) {
+        return null;
+      }
+
+      final day = int.parse(dateParts[0]);
+      final month = int.parse(dateParts[1]);
+      final year = int.parse(dateParts[2]);
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      // Yıl formatını kontrol et (2 haneli ise 2000 ekle)
+      final fullYear = year < 100 ? 2000 + year : year;
+
+      final appointmentDateTime = DateTime(fullYear, month, day, hour, minute);
+
+      // Debug için konsola yazdır
+      print('Parsed date: $date $time -> $appointmentDateTime');
+
+      return appointmentDateTime;
+    } catch (e) {
+      print('Date parsing error: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -211,22 +251,8 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
   }
 
   Widget _buildBookingCard(Booking booking) {
-    // Randevu tarihini DateTime'a çevirme
-    final dateParts = booking.date.split('.');
-    final timeParts = booking.time.split(':');
-    DateTime appointmentDateTime;
-
-    try {
-      appointmentDateTime = DateTime(
-        int.parse(dateParts[2]), // yıl
-        int.parse(dateParts[1]), // ay
-        int.parse(dateParts[0]), // gün
-        int.parse(timeParts[0]), // saat
-        int.parse(timeParts[1]), // dakika
-      );
-    } catch (e) {
-      appointmentDateTime = DateTime.now().add(const Duration(days: 1));
-    }
+    // Randevu tarihini DateTime'a çevirme - düzeltilmiş versiyon
+    final appointmentDateTime = _parseAppointmentDateTime(booking.date, booking.time);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -347,10 +373,11 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
                         ],
                       ),
 
-                      // Countdown widget'ını buraya ekliyoruz
-                      if (booking.status.toLowerCase() == 'accepted' ||
+                      // Countdown widget'ını buraya ekliyoruz - sadece onaylı randevular için
+                      if ((booking.status.toLowerCase() == 'accepted' ||
                           booking.status.toLowerCase() == 'confirmed' ||
-                          booking.status.toLowerCase() == 'onaylandı')
+                          booking.status.toLowerCase() == 'onaylandı') &&
+                          appointmentDateTime != null)
                         CountdownWidget(appointmentTime: appointmentDateTime),
                     ],
                   ),
@@ -395,6 +422,7 @@ class _UpcomingAppointmentsPageState extends State<UpcomingAppointmentsPage> {
     );
   }
 }
+
 class CountdownWidget extends StatefulWidget {
   final DateTime appointmentTime;
 
@@ -440,31 +468,44 @@ class _CountdownWidgetState extends State<CountdownWidget> {
     final seconds = duration.inSeconds % 60;
 
     if (days > 0) {
-      return '${days}g ${twoDigits(hours)}s ${twoDigits(minutes)}d';
+      return '${days} gün ${twoDigits(hours)} saat ${twoDigits(minutes)} dakika';
+    } else if (hours > 0) {
+      return '${twoDigits(hours)} saat ${twoDigits(minutes)} dakika ${twoDigits(seconds)} saniye';
     } else {
-      return '${twoDigits(hours)}:${twoDigits(minutes)}:${twoDigits(seconds)}';
+      return '${twoDigits(minutes)} dakika ${twoDigits(seconds)} saniye';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Eğer randevu zamanı geçmişse farklı stil göster
+    final isPastAppointment = _remainingTime == Duration.zero && DateTime.now().isAfter(widget.appointmentTime);
+
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF6B46C1).withOpacity(0.1),
+        color: isPastAppointment
+            ? Colors.red.withOpacity(0.1)
+            : const Color(0xFF6B46C1).withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.timer_outlined, size: 16, color: Color(0xFF6B46C1)),
+          Icon(
+              isPastAppointment ? Icons.event_busy : Icons.timer_outlined,
+              size: 16,
+              color: isPastAppointment ? Colors.red : const Color(0xFF6B46C1)
+          ),
           const SizedBox(width: 4),
           Text(
-            _remainingTime.isNegative ? 'Randevu zamanı geçti' : 'Kalan: ${_formatDuration(_remainingTime)}',
-            style: const TextStyle(
+            isPastAppointment
+                ? 'Randevu zamanı geçti'
+                : 'Kalan: ${_formatDuration(_remainingTime)}',
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF6B46C1),
+              color: isPastAppointment ? Colors.red : const Color(0xFF6B46C1),
               fontWeight: FontWeight.w600,
             ),
           ),

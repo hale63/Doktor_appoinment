@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:location/location.dart';
 
+import '../auth/login_page.dart';
+
 class DoctorProfile extends StatefulWidget {
   const DoctorProfile({super.key});
 
@@ -101,7 +103,43 @@ class _DoctorProfileState extends State<DoctorProfile> with TickerProviderStateM
       });
     }
   }
+  Future<void> _logout() async {
+    // Show confirmation dialog
+    bool? shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Çıkış Yap'),
+          content: const Text('Uygulamadan çıkmak istediğinize emin misiniz?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            TextButton(
+              child: const Text('Çıkış Yap', style: TextStyle(color: Colors.red)),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
 
+    // If user confirmed logout
+    if (shouldLogout == true) {
+      try {
+        await _auth.signOut();
+        if (!mounted) return;
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false,
+        );
+      } catch (e) {
+        if (!mounted) return;
+        _showErrorDialog('Çıkış yapılırken hata oluştu: ${e.toString()}');
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,6 +155,13 @@ class _DoctorProfileState extends State<DoctorProfile> with TickerProviderStateM
         backgroundColor: primaryPurple,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+            tooltip: 'Çıkış Yap',
+          ),
+        ],
       ),
       body: SafeArea(
         child: _isLoading ? _buildLoadingWidget() : _buildProfileForm(),
@@ -500,7 +545,7 @@ class _DoctorProfileState extends State<DoctorProfile> with TickerProviderStateM
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
-              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi'].map((String cat) {
+              items: ['Dentist', 'Kardiyoloji', 'Onkoloji', 'Cerrahi','Neurology','Dermatology'].map((String cat) {
                 return DropdownMenuItem(
                   value: cat,
                   child: Text(cat),
